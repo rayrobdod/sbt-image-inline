@@ -1,0 +1,16 @@
+target/
+project/target
+*.iml
+*.ipr
+*.iws
+*~
+.idea
+.ensime
+.DS_Store
+.project
+.classpath
+.scala_dependencies
+java.hprof.txt
+*.swp
+.*.un~
+*.class

@@ -1,0 +1,4 @@
+> web-stage
+$ exists target/web/stage/index.svg
+$ absent target/web/inlineImages/index.svg
+> web-stage::verify
