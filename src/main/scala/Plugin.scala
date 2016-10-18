@@ -18,13 +18,12 @@ object Plugin extends AutoPlugin {
 	}
 	import autoImport._
 	
-	private[this] val baseImageFilter = ExistsFileFilter && new SimpleFileFilter({f => Files.size(f.toPath) < (1024 * 2)})
-	
 	override lazy val projectSettings = Seq(
+		includeFilter in imagesToInline := ExistsFileFilter && new SimpleFileFilter({f => Files.size(f.toPath) < (1024 * 2)}),
 		imagesToInline in inlineImages := Seq(
-				(baseImageFilter && "*.png") -> "image/png",
-				(baseImageFilter && "*.jpe?g") -> "image/jpeg",
-				(baseImageFilter && "*.gif") -> "image/gif"
+				((includeFilter in imagesToInline).value && "*.png") -> "image/png",
+				((includeFilter in imagesToInline).value && "*.jpe?g") -> "image/jpeg",
+				((includeFilter in imagesToInline).value && "*.gif") -> "image/gif"
 		),
 		documentsToInline in inlineImages := Seq(
 			GlobFilter("*.svg") -> Transformations.Xlink,
