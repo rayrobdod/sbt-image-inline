@@ -73,8 +73,30 @@ object Transformations {
 	}
 	
 	object Css extends Transform {
+		private[this] val pattern = java.util.regex.Pattern.compile("""url\("([^"]*)"\)""")
+		
 		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File = {
-			inputFile
+			val inputStr = sbt.IO.readLines(inputFile, UTF_8).mkString("\n")
+			val inputMatcher = pattern.matcher(inputStr)
+			
+			val outputBuf = new java.lang.StringBuffer()
+			while (inputMatcher.find()) {
+				val imgStr = inputMatcher.group(1)
+				val imgAbs = (new File(path).getParentFile / imgStr).toString
+				
+				val newUri = findFile(imgAbs, allPaths).map{imgFile =>
+					inlineFilters.find{_._1.accept(imgFile)}.map{case (_, mime) =>
+						toDataUri(imgFile, mime)
+					}.getOrElse(imgStr)
+				}.getOrElse(imgStr)
+				val replacement = "url(\"" + newUri + "\")"
+				
+				inputMatcher.appendReplacement(outputBuf, replacement);
+			}
+			inputMatcher.appendTail(outputBuf);
+			
+			sbt.IO.writeLines(outDir / path, outputBuf.toString.split("\n"), UTF_8, false)
+			outDir / path
 		}
 	}
 	
