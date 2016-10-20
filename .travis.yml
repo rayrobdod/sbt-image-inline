@@ -1,0 +1,8 @@
+language: scala
+
+install:
+   - sbt update
+
+script:
+   - sbt test
+   - sbt scripted
