@@ -8,12 +8,11 @@ import scala.collection.{Seq => DSeq}
 import com.typesafe.sbt.web.Import.WebKeys.webTarget
 import com.typesafe.sbt.web.pipeline.Pipeline
 import com.typesafe.sbt.web.PathMapping
-import com.rayrobdod.sbtImageInline.Transformations.Transform
 
 object Plugin extends AutoPlugin {
 	object autoImport {
 		val inlineImages = taskKey[Pipeline.Stage]("Convert links to resources to data uris")
-		val documentsToInline = settingKey[Seq[(FileFilter, Transform)]]("")
+		val documentsToInline = settingKey[Seq[(FileFilter, Transformation)]]("")
 		val imagesToInline = settingKey[Seq[(FileFilter, String)]]("")
 	}
 	import autoImport._
@@ -26,9 +25,9 @@ object Plugin extends AutoPlugin {
 				((includeFilter in imagesToInline).value && "*.gif") -> "image/gif"
 		),
 		documentsToInline in inlineImages := Seq(
-			GlobFilter("*.svg") -> Transformations.Xlink,
-			GlobFilter("*.x?html?") -> Transformations.Html,
-			GlobFilter("*.css") -> Transformations.Css
+			GlobFilter("*.svg") -> Transformation.Xlink,
+			GlobFilter("*.x?html?") -> Transformation.Html,
+			GlobFilter("*.css") -> Transformation.Css
 		),
 		target in inlineImages := webTarget.value / "inlineImages",
 		

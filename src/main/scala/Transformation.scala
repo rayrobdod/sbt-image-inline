@@ -6,14 +6,22 @@ import scala.collection.{Seq => DSeq}
 import sbt._
 import com.typesafe.sbt.web.PathMapping
 
-object Transformations {
-	trait Transform {
-		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File
-	}
+trait Transformation {
+	/**
+	* @param inputFile the file containing the contents of the document
+	* @param path the logical path relative to the website root
+	* @param inlineFilters the filters indicating which files to inline to inline 
+	* @param allPaths All files in the current classpath, including a file and a logical path
+	* @param outDir The directory to write files to
+	* @param logger a logger
+	*/
+	def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File
+}
 	
-	
-	
-	object Xlink extends Transform {
+/** Implementations of Transformation */
+object Transformation {
+	/** A transform that affects xlink:href attributes in XML documents */
+	object Xlink extends Transformation {
 		import com.codecommit.antixml.{Selector, XML, QName, Node, Elem}
 		private[this] val uri = """http://www.w3.org/1999/xlink"""
 		private[this] val relPart = "href"
@@ -66,13 +74,14 @@ object Transformations {
 		}
 	}
 	
-	object Html extends Transform {
+	object Html extends Transformation {
 		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File = {
 			inputFile
 		}
 	}
 	
-	object Css extends Transform {
+	/** A transform that affects `url(relativeurl)` text */
+	object Css extends Transformation {
 		private[this] val pattern = java.util.regex.Pattern.compile("""url\("([^"]*)"\)""")
 		
 		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File = {
