@@ -10,7 +10,7 @@ package object sbtImageInline {
 	 */
 	def toDataUri(f:File, mime:String):String = {
 		val bytes:Array[Byte] = sbt.IO.readBytes(f)
-		val encoded = java.util.Base64.getUrlEncoder.encodeToString(bytes)
+		val encoded = java.util.Base64.getEncoder.encodeToString(bytes)
 		s"data:${mime};base64,${encoded}"
 	}
 	
