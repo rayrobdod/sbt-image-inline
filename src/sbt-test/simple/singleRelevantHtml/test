@@ -1,0 +1,5 @@
+> web-stage
+$ exists target/web/stage/index.html
+$ exists target/web/stage/arrow.png
+$ exists target/web/inlineImages/index.html
+> web-stage::verify

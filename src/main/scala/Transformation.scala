@@ -74,9 +74,45 @@ object Transformation {
 		}
 	}
 	
+	/** A transform that affects `img[src]` attributes in HTML documents */
 	object Html extends Transformation {
+		import org.jsoup.nodes.Node
+		import org.jsoup.select.NodeVisitor
+		val relPart = "src"
+		
 		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File = {
-			inputFile
+			val doc = org.jsoup.Jsoup.parse(inputFile, "UTF-8", path)
+			val replaceableElems = doc select "img[src]"
+			logger.info(replaceableElems.toString)
+			
+			if (replaceableElems.isEmpty) {
+				inputFile
+			} else {
+				replaceableElems.traverse(new InlineSrcVisitor(path, inlineFilters, allPaths, logger))
+				val newString = doc.toString
+				sbt.IO.write(outDir / path, newString)
+				logger.info((outDir / path).toString)
+				outDir / path
+			}
+		}
+		
+		private[this] class InlineSrcVisitor(path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], logger:sbt.Logger) extends NodeVisitor {
+			override def head(node:Node, depth:Int):Unit = {
+				val imgStr = node.attributes.get(relPart)
+				val imgAbs = (new File(path).getParentFile / imgStr).toString
+				logger.info(s"$imgStr -> $imgAbs")
+				
+				val updated = findFile(imgAbs, allPaths).map{imgFile =>
+					inlineFilters.find{_._1.accept(imgFile)}.map{case (_, mime) =>
+						node.attr(relPart, toDataUri(imgFile, mime))
+						true
+					}.getOrElse(false)
+				}.getOrElse(false)
+			}
+			
+			override def tail(n:Node, depth:Int):Unit = {
+				// do nothing
+			}
 		}
 	}
 	

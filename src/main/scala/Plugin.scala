@@ -21,12 +21,15 @@ object Plugin extends AutoPlugin {
 		includeFilter in imagesToInline := ExistsFileFilter && new SimpleFileFilter({f => Files.size(f.toPath) < (1024 * 2)}),
 		imagesToInline in inlineImages := Seq(
 				((includeFilter in imagesToInline).value && "*.png") -> "image/png",
-				((includeFilter in imagesToInline).value && "*.jpe?g") -> "image/jpeg",
+				((includeFilter in imagesToInline).value && "*.jpg") -> "image/jpeg",
+				((includeFilter in imagesToInline).value && "*.jpeg") -> "image/jpeg",
 				((includeFilter in imagesToInline).value && "*.gif") -> "image/gif"
 		),
 		documentsToInline in inlineImages := Seq(
 			GlobFilter("*.svg") -> Transformation.Xlink,
-			GlobFilter("*.x?html?") -> Transformation.Html,
+			GlobFilter("*.htm") -> Transformation.Html,
+			GlobFilter("*.html") -> Transformation.Html,
+			GlobFilter("*.xhtml") -> Transformation.Html,
 			GlobFilter("*.css") -> Transformation.Css
 		),
 		target in inlineImages := webTarget.value / "inlineImages",
