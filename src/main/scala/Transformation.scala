@@ -6,19 +6,25 @@ import scala.collection.{Seq => DSeq}
 import sbt._
 import com.typesafe.sbt.web.PathMapping
 
+/**
+ * A function that takes an input document and, using the information provided
+ * by the other parameters, writes an altered output file.
+ */
 trait Transformation {
 	/**
+	* Take the contents of `inputFile`, transform it, then write the output to a file and return that file
 	* @param inputFile the file containing the contents of the document
 	* @param path the logical path relative to the website root
 	* @param inlineFilters the filters indicating which files to inline to inline 
 	* @param allPaths All files in the current classpath, including a file and a logical path
 	* @param outDir The directory to write files to
 	* @param logger a logger
+	* @return the file that was written
 	*/
 	def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File
 }
 	
-/** Implementations of Transformation */
+/** Implementations of [[Transformation]] */
 object Transformation {
 	/** A transform that affects xlink:href attributes in XML documents */
 	object Xlink extends Transformation {

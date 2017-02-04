@@ -12,12 +12,12 @@ import com.typesafe.sbt.web.PathMapping
 object Plugin extends AutoPlugin {
 	object autoImport {
 		val inlineImages = taskKey[Pipeline.Stage]("Convert links to resources to data uris")
-		val documentsToInline = settingKey[Seq[(FileFilter, Transformation)]]("")
-		val imagesToInline = settingKey[Seq[(FileFilter, String)]]("")
+		val documentsToInline = settingKey[Seq[(FileFilter, Transformation)]]("A set of filters for document files to inline into, mapped to the transformation of how to modify those files")
+		val imagesToInline = settingKey[Seq[(FileFilter, String)]]("A set of filters for image files to place inline, mapped to the Content-Type of those files")
 	}
 	import autoImport._
 	
-	override lazy val projectSettings = Seq(
+	override lazy val projectSettings:Seq[Def.Setting[_]] = Seq(
 		includeFilter in imagesToInline := ExistsFileFilter && new SimpleFileFilter({f => Files.size(f.toPath) < (1024 * 2)}),
 		imagesToInline in inlineImages := Seq(
 				((includeFilter in imagesToInline).value && "*.png") -> "image/png",
