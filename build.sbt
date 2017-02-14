@@ -8,6 +8,7 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 version := "1.0-SNAPSHOT"
 
+resolvers += ("rayrobdod" at "https://ivy.rayrobdod.name/")
 libraryDependencies ++= Seq(
 	  "com.rayrobdod" %% "anti-xml" % "0.7-SNAPSHOT-20150909"
 	, "org.jsoup" % "jsoup" % "1.10.2"

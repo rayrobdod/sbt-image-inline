@@ -8,4 +8,5 @@
   }
 }
 
+resolvers += Resolver.typesafeRepo("releases") 
 addSbtPlugin("com.slidingautonomy.sbt" % "sbt-filter" % "1.0.1")
