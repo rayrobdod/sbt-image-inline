@@ -8,6 +8,8 @@ organizationHomepage := Some(new URL("http://rayrobdod.name/"))
 
 version := "1.0-SNAPSHOT"
 
+licenses += (("MIT", new URL("https://opensource.org/licenses/MIT") ))
+
 resolvers += ("rayrobdod" at "https://ivy.rayrobdod.name/")
 libraryDependencies ++= Seq(
 	  "com.rayrobdod" %% "anti-xml" % "0.7-SNAPSHOT-20150909"
@@ -17,6 +19,7 @@ libraryDependencies ++= Seq(
 addSbtPlugin("com.typesafe.sbt" %% "sbt-web" % "1.4.0")
 
 
+// scripted
 ScriptedPlugin.scriptedSettings
 
 scriptedLaunchOpts := { scriptedLaunchOpts.value ++
