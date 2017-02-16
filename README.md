@@ -1,5 +1,6 @@
 # sbt-inline-image
 [![Build Status](https://travis-ci.org/rayrobdod/sbt-image-inline.svg?branch=master)](https://travis-ci.org/rayrobdod/sbt-image-inline)
+[![Build status](https://ci.appveyor.com/api/projects/status/feb5vnk8gum7oq1y/branch/master?svg=true)](https://ci.appveyor.com/project/rayrobdod/sbt-image-inline/branch/master)
 
 A sbt-web pipeline stage to take links to small images in html, svg and css
 documents and convert those references into data uris.
