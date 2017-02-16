@@ -35,7 +35,7 @@ object Transformation {
 		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File = {
 			val inputXml = sbt.IO.reader(inputFile, UTF_8){XML.fromReader}
 			val replacableElems = inputXml \\ ElemWithXlinkTargetSelector
-			logger.info(replacableElems.toString)
+			logger.debug(replacableElems.toString)
 			
 			if (replacableElems.isEmpty) {
 				inputFile
@@ -45,7 +45,7 @@ object Transformation {
 						namespaces.findByUri(uri).map{ns =>
 							val imgStr = attrs(QName(ns.prefix, relPart))
 							val imgAbs = (new File(path).getParentFile / imgStr).toString
-							logger.info(s"$imgStr -> $imgAbs")
+							logger.debug(s"$imgStr -> $imgAbs")
 							
 							findFile(imgAbs, allPaths).map{imgFile =>
 								inlineFilters.find{_._1.accept(imgFile)}.map{case (_, mime) =>
@@ -60,7 +60,7 @@ object Transformation {
 				val newXml = newElems.unselect
 				val newString = newXml.toString
 				sbt.IO.write(outDir / path, newString)
-				logger.info((outDir / path).toString)
+				logger.debug((outDir / path).toString)
 				outDir / path
 			}
 			
@@ -89,7 +89,7 @@ object Transformation {
 		def apply(inputFile:File, path:String, inlineFilters:Seq[(sbt.FileFilter, String)], allPaths:DSeq[PathMapping], outDir:File, logger:sbt.Logger):File = {
 			val doc = org.jsoup.Jsoup.parse(inputFile, "UTF-8", path)
 			val replaceableElems = doc select "img[src]"
-			logger.info(replaceableElems.toString)
+			logger.debug(replaceableElems.toString)
 			
 			if (replaceableElems.isEmpty) {
 				inputFile
@@ -97,7 +97,7 @@ object Transformation {
 				replaceableElems.traverse(new InlineSrcVisitor(path, inlineFilters, allPaths, logger))
 				val newString = doc.toString
 				sbt.IO.write(outDir / path, newString)
-				logger.info((outDir / path).toString)
+				logger.debug((outDir / path).toString)
 				outDir / path
 			}
 		}
@@ -106,7 +106,7 @@ object Transformation {
 			override def head(node:Node, depth:Int):Unit = {
 				val imgStr = node.attributes.get(relPart)
 				val imgAbs = (new File(path).getParentFile / imgStr).toString
-				logger.info(s"$imgStr -> $imgAbs")
+				logger.debug(s"$imgStr -> $imgAbs")
 				
 				val updated = findFile(imgAbs, allPaths).map{imgFile =>
 					inlineFilters.find{_._1.accept(imgFile)}.map{case (_, mime) =>
