@@ -24,3 +24,7 @@ scriptedLaunchOpts := { scriptedLaunchOpts.value ++
 }
 
 scriptedBufferLog := false
+
+// scalaTest
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.0" % "test"
+testOptions in Test += Tests.Argument("-oS", "-u", s"${crossTarget.value}/test-results-junit")
